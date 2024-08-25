@@ -564,7 +564,7 @@ MonoBehaviour:
   waitingLine: {x: -0.9093714, y: 1, z: -6.4}
   offsetZ: 2
   spawnerControllers: []
-  locationToGo: {x: -0.909, y: 1, z: -2}
+  locationToGo: {x: -0.909, y: 2, z: -2}
 --- !u!4 &1028836469
 Transform:
   m_ObjectHideFlags: 0

@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class CustomerBot : MonoBehaviour
 {
-    [SerializeField] float speed = 10;
+    [SerializeField] private float speed = 10;
+    public bool isArranged;
     void Start()
     {
         
@@ -12,7 +13,7 @@ public class CustomerBot : MonoBehaviour
 
     public void RunUpdate()
     {
-        transform.Translate(Vector3.right * speed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position , transform.position + Vector3.right,  speed * Time.deltaTime);
     }
 
     private void OnTriggerEnter(Collider other)

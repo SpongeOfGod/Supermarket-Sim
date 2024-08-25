@@ -39,7 +39,9 @@ public class CustomerLine : MonoBehaviour
 
         if (onSearchMode && !onPosition) 
         {
-            StartCoroutine(AlignWithSections());
+            IEnumerator coroutine = AlignWithSections();
+            StartCoroutine(coroutine);
+            RearrangeCustomers();
         }
 
         if (onPosition) 
@@ -60,6 +62,17 @@ public class CustomerLine : MonoBehaviour
         currentTime = 0;
     }
 
+    public void RearrangeCustomers() 
+    {
+        foreach(GameObject gameObject in queue) 
+        {
+            if(gameObject != queue.Peek() && !gameObject.GetComponent<CustomerBot>().isArranged) 
+            {
+                StartCoroutine(MoveCustomersInLine(gameObject));
+            }
+        }
+    }
+
     IEnumerator AlignWithSections() 
     {
         float cTime = 0;
@@ -73,7 +86,23 @@ public class CustomerLine : MonoBehaviour
         }
         a.transform.position = locationToGo;
         onPosition = true;
-        StopCoroutine(AlignWithSections());
+        StopCoroutine("AlignWithSections");
+        yield return null;
+    }
+
+    IEnumerator MoveCustomersInLine(GameObject customer) 
+    {
+        float cTime = 0;
+        Vector3 initialPos = customer.transform.position;
+        while(cTime < timeToReachSections && onSearchMode && !onPosition) 
+        {
+            cTime += Time.deltaTime;
+            customer.transform.position = Vector3.Lerp(initialPos, initialPos + new Vector3(0, 0, 2), cTime / timeToReachSections);
+            yield return null;
+        }
+        customer.transform.position = initialPos + new Vector3(0, 0, 2);
+        customer.GetComponent<CustomerBot>().isArranged = true;
+        StopCoroutine("MoveCustomersInLine");
         yield return null;
     }
 }
