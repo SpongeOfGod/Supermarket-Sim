@@ -15,17 +15,18 @@ public class CustomerBot : MonoBehaviour
     [Header("State")]
     public int queuePosition;
     public bool done;
+    public bool walking = true;
 
-    private bool hasSearched;
-    private bool isFirst;
-    private bool firstSearchDone;
+    public bool hasSearched;
+    public bool isFirst;
+    public bool firstSearchDone;
 
     [Header("Positions")]
     private Vector3 targetPosition;
     private Vector3 initialPosition;
 
     [Header("Components")]
-    private ShelfList shelfList;
+    public ShelfList shelfList;
 
     private void Start()
     {
@@ -37,7 +38,7 @@ public class CustomerBot : MonoBehaviour
 
     private void Update()
     {
-        float currentSpeed = hasSearched ? speed : speed * speedMultiplier;
+        float currentSpeed = walking ? speed * speedMultiplier : speed;
 
         if (!isFirst)
         {
@@ -64,10 +65,13 @@ public class CustomerBot : MonoBehaviour
         {
             StartCoroutine(SearchForShelf());
             hasSearched = true;
+            walking = false;
         }
     }
 
     public int QueuePosition => queuePosition;
+
+    public bool FirstSearchDone { get => firstSearchDone; set => firstSearchDone = value; }
 
     public void SetQueuePosition(int positionIndex)
     {
@@ -77,97 +81,5 @@ public class CustomerBot : MonoBehaviour
     public void SetTargetPosition(Vector3 position)
     {
         targetPosition = position;
-    }
-
-    private IEnumerator MoveToPosition(Vector3 destination, float moveSpeed)
-    {
-        while (Vector3.Distance(transform.position, destination) > 0.1f)
-        {
-            Vector3 newPosition = Vector3.MoveTowards(transform.position, destination, moveSpeed * Time.deltaTime);
-            transform.position = new Vector3(newPosition.x, transform.position.y, newPosition.z);
-            RotateTowardsDirection(destination);
-            yield return null;
-        }
-        transform.position = new Vector3(destination.x, transform.position.y, destination.z);
-    }
-
-    private IEnumerator SearchForShelf()
-    {
-        if (!firstSearchDone)
-        {
-            yield return new WaitForSeconds(0.5f);
-            firstSearchDone = true;
-        }
-
-        GameObject shelf = shelfList.GetRandomShelf();
-        if (shelf != null)
-        {
-            SectionManager sectionManager = shelf.GetComponent<SectionManager>();
-            if (sectionManager != null && sectionManager.sections.Count > 0)
-            {
-                int randomIndex = Random.Range(0, sectionManager.sections.Count);
-                GameObject section = sectionManager.sections[randomIndex];
-                if (section != null)
-                {
-                    Vector3 sectionPosition = section.transform.position;
-                    SetTargetPosition(sectionPosition + targetOffset);
-                    yield return MoveToPosition(targetPosition, speed);
-
-                    yield return LookAtSection();
-
-                    SpawnerController spawner = section.GetComponent<SpawnerController>();
-                    if (spawner != null && spawner.ObjectStack.Count > 0)
-                    {
-                        Debug.Log("Misión Cumplida :)");
-                        GameObject cereal = spawner.PopStack();
-                        if(cereal != null) 
-                        {
-                            Animator animator = cereal.GetComponent<Animator>();
-                            if(animator != null) 
-                            {
-                                animator.SetBool("despawn", false);
-                            }
-                            done = true;
-                            cereal.transform.parent = parentForFlakes;
-                            cereal.transform.position = parentForFlakes.transform.position + new Vector3(0, 1, 1);
-                        }
-                    }
-                    else
-                    {
-                        Debug.Log("Intentando una sección aleatoria :(");
-                        yield return new WaitForSeconds(waitTime);
-                        StartCoroutine(NextSection());
-                    }
-                }
-            }
-        }
-    }
-
-    private IEnumerator LookAtSection()
-    {
-        while (Mathf.Abs(transform.rotation.eulerAngles.y) > 0.1f)
-        {
-            Quaternion targetRotation = Quaternion.Euler(transform.rotation.eulerAngles.x, 0, transform.rotation.eulerAngles.z);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-            yield return null;
-        }
-        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, 0, transform.rotation.eulerAngles.z);
-    }
-
-    private IEnumerator NextSection()
-    {
-        yield return new WaitForSeconds(waitTime);
-        StartCoroutine(SearchForShelf());
-    }
-
-    private void RotateTowardsDirection(Vector3 targetPosition)
-    {
-        Vector3 direction = targetPosition - transform.position;
-        direction.y = 0;
-        if (direction != Vector3.zero)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, speed * Time.deltaTime);
-        }
     }
 }

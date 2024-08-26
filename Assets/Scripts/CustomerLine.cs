@@ -113,6 +113,7 @@ public class CustomerLine : MonoBehaviour
     {
         if (queue.Count > 0)
         {
+            GameManager.AddScore();
             GameObject firstCustomer = queue.Dequeue();
             Destroy(firstCustomer);
             UpdatePositions();
