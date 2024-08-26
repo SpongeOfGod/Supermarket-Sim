@@ -1,58 +1,88 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class SpawnerController : MonoBehaviour
 {
     public Stack<GameObject> ObjectStack = new Stack<GameObject>();
-    [SerializeField] private GameObject objectToAdd;
-    [SerializeField] private GameObject[] gameObjects;
-    [SerializeField] private float spaceBetween;
-    [SerializeField] private Vector3 initialPos;
 
+    [Header("Prefab")]
+    public GameObject objects;
+
+    [Header("Position")]
+    [SerializeField] private Vector3 initialPos;
+    [SerializeField] private Vector3 offset;
+
+    [Header("Material")]
+    [SerializeField] private Material highlightMaterial;
+    private Material originalMaterial;
+
+    private MeshRenderer meshRenderer;
     private bool above;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        initialPos = gameObject.transform.position;
+        meshRenderer = GetComponentInChildren<MeshRenderer>();
+        if (meshRenderer != null)
+        {
+            originalMaterial = meshRenderer.material;
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        gameObjects = ObjectStack.ToArray();
-
-        if (Input.GetButtonDown("Fire2") && ObjectStack.Count >= 0 && above) 
+        if (Input.GetButtonDown("Fire2") && ObjectStack.Count > 0 && above)
         {
             PopStack();
         }
 
         if (Input.GetButtonDown("Fire1") && ObjectStack.Count <= 4 && above)
         {
-            GameObject a = Instantiate(objectToAdd, Vector3.zero, Quaternion.identity, transform);
-            a.transform.position = initialPos + Vector3.back * spaceBetween * ObjectStack.Count + new Vector3(0,1f,0);
-            Quaternion rotA = Quaternion.Euler(0, 0, 180);
-            a.transform.rotation = rotA;
+            GameObject a = Instantiate(objects, Vector3.zero, Quaternion.identity, transform);
+            a.transform.localPosition = initialPos + Vector3.Scale(offset, new Vector3(0, 0, ObjectStack.Count));
+            a.transform.rotation = Quaternion.Euler(0, 0, 180);
             ObjectStack.Push(a);
         }
     }
 
-    public void PopStack() 
+    public void PopStack()
     {
-        ObjectStack.TryPop(out GameObject plate);
-        Destroy(plate);
+        if (ObjectStack.TryPop(out GameObject plate))
+        {
+            Animator animator = plate.GetComponent<Animator>();
+            if (animator != null)
+            {
+                animator.SetBool("despawn", true);
+                StartCoroutine(WaitAndDestroy(plate, 0.1f));
+            }
+            else
+            {
+                Destroy(plate);
+            }
+        }
+    }
+
+    private IEnumerator WaitAndDestroy(GameObject obj, float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        Destroy(obj);
     }
 
     private void OnMouseOver()
     {
         above = true;
+        if (meshRenderer != null)
+        {
+            meshRenderer.material = highlightMaterial;
+        }
     }
 
     private void OnMouseExit()
     {
         above = false;
+        if (meshRenderer != null)
+        {
+            meshRenderer.material = originalMaterial;
+        }
     }
-
 }

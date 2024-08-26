@@ -4,7 +4,15 @@
 TagManager:
   serializedVersion: 2
   tags:
+<<<<<<< Updated upstream
   - Muro
+=======
+  - Section
+  - Shelf
+  - Object
+  - ShelfManager
+  - Container
+>>>>>>> Stashed changes
   layers:
   - Default
   - TransparentFX
