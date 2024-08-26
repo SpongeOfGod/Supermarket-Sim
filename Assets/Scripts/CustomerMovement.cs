@@ -7,16 +7,23 @@ using UnityEngine.TestTools;
 using UnityEngine.UIElements;
 using UnityEngine.XR;
 
-public class CustomerMovement
+public class CustomerMovement : MonoBehaviour
 {
-    CustomerBot CustomerBot;
+    [Header("Movement")]
+    [SerializeField] private Vector3 targetOffset = Vector3.zero;
+    [SerializeField] private Transform parentForFlakes;
+    [SerializeField] private float waitTime = 0.25f;
+    [SerializeField] private float rotationSpeed = 15f;
+
+    CustomerBot customerBot;
     GameObject CustomerObject;
-    public CustomerMovement(CustomerBot customer) 
+    public void Initialize(CustomerBot customer, GameObject customerGameObject) 
     {
-        CustomerBot = customer;
+        customerBot = customer;
+        CustomerObject = customerGameObject;
     }
 
-    private IEnumerator MoveToPosition(Vector3 destination, float moveSpeed)
+    public IEnumerator MoveToPosition(Vector3 destination, float moveSpeed)
     {
         while (Vector3.Distance(CustomerObject.transform.position, destination) > 0.1f)
         {
@@ -28,27 +35,27 @@ public class CustomerMovement
         CustomerObject.transform.position = new Vector3(destination.x, CustomerObject.transform.position.y, destination.z);
     }
 
-    private IEnumerator SearchForShelf()
+    public IEnumerator SearchForShelf()
     {
-        if (!CustomerBot.firstSearchDone)
+        if (!customerBot.FirstSearchDone)
         {
             yield return new WaitForSeconds(0.5f);
-            CustomerBot.firstSearchDone = true;
+            customerBot.FirstSearchDone = true;
         }
 
-        GameObject shelf = CustomerBot.shelfList.GetRandomSection();
+        GameObject shelf = customerBot.shelfList.GetRandomSection();
         if (shelf != null)
         {
             Vector3 sectionPosition = shelf.transform.position;
-            CustomerBot.SetTargetPosition(sectionPosition + targetOffset);
-            yield return MoveToPosition(targetPosition, speed);
+            customerBot.SetTargetPosition(sectionPosition + targetOffset);
+            yield return MoveToPosition(customerBot.TargetPosition, customerBot.Speed);
 
             yield return LookAtSection();
 
             SpawnerController spawner = shelf.GetComponent<SpawnerController>();
             if (spawner != null && spawner.ObjectStack.Count > 0)
             {
-                walking = true;
+                customerBot.Walking = true;
                 Debug.Log("Misión Cumplida :)");
                 GameObject cereal = spawner.PopStack();
                 if (cereal != null)
@@ -58,7 +65,7 @@ public class CustomerMovement
                     {
                         animator.SetBool("despawn", false);
                     }
-                    done = true;
+                    customerBot.done = true;
                     cereal.transform.parent = parentForFlakes;
                     cereal.transform.position = parentForFlakes.transform.position + new Vector3(0, 1, 1);
                 }
@@ -72,31 +79,31 @@ public class CustomerMovement
         }
     }
 
-    private IEnumerator LookAtSection()
+    public IEnumerator LookAtSection()
     {
         while (Mathf.Abs(CustomerObject.transform.rotation.eulerAngles.y) > 0.1f)
         {
             Quaternion targetRotation = Quaternion.Euler(CustomerObject.transform.rotation.eulerAngles.x, 0, CustomerObject.transform.rotation.eulerAngles.z);
-            CustomerObject.transform.rotation = Quaternion.Slerp(CustomerObject.transform.rotation, targetRotation, CustomerBot.rotationSpeed * Time.deltaTime);
+            CustomerObject.transform.rotation = Quaternion.Slerp(CustomerObject.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
             yield return null;
         }
         CustomerObject.transform.rotation = Quaternion.Euler(CustomerObject.transform.rotation.eulerAngles.x, 0, CustomerObject.transform.rotation.eulerAngles.z);
     }
 
-    private IEnumerator NextSection()
+    public IEnumerator NextSection()
     {
         yield return new WaitForSeconds(waitTime);
         StartCoroutine(SearchForShelf());
     }
 
-    private void RotateTowardsDirection(Vector3 targetPosition)
+    public void RotateTowardsDirection(Vector3 targetPosition)
     {
         Vector3 direction = targetPosition - transform.position;
         direction.y = 0;
         if (direction != Vector3.zero)
         {
             Quaternion targetRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, speed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, customerBot.Speed * Time.deltaTime);
         }
     }
 }

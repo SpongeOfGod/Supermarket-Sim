@@ -5,21 +5,19 @@ using UnityEngine;
 public class CustomerBot : MonoBehaviour
 {
     [Header("Movement")]
+    [SerializeField] private CustomerMovement customerMovement;
     [SerializeField] private float speed = 2f;
-    [SerializeField] private float waitTime = 0.25f;
     [SerializeField] private float speedMultiplier = 3f;
-    [SerializeField] private float rotationSpeed = 15f;
-    [SerializeField] private Vector3 targetOffset = Vector3.zero;
-    [SerializeField] private Transform parentForFlakes;
 
     [Header("State")]
-    public int queuePosition;
-    public bool done;
-    public bool walking = true;
+    private int queuePosition;
+    private bool walking = true;
 
-    public bool hasSearched;
-    public bool isFirst;
-    public bool firstSearchDone;
+    private bool hasSearched;
+    private bool isFirst;
+    private bool firstSearchDone;
+    public bool done;
+
 
     [Header("Positions")]
     private Vector3 targetPosition;
@@ -28,10 +26,21 @@ public class CustomerBot : MonoBehaviour
     [Header("Components")]
     public ShelfList shelfList;
 
+
+    //Getters and Setters
+    public int QueuePosition => queuePosition;
+    public bool FirstSearchDone { get => firstSearchDone; set => firstSearchDone = value; }
+    public Vector3 TargetPosition { get => targetPosition; set => targetPosition = value; }
+    public float Speed { get => speed; set => speed = value; }
+    public bool Walking { get => walking; set => walking = value; }
+
+
     private void Start()
     {
-        shelfList = GameObject.FindGameObjectWithTag("ShelfManager").GetComponent<ShelfList>();
         initialPosition = transform.position;
+        customerMovement = gameObject.GetComponent<CustomerMovement>();
+        customerMovement.Initialize(this, gameObject);
+        shelfList = GameObject.FindGameObjectWithTag("ShelfManager").GetComponent<ShelfList>();
         isFirst = false;
         firstSearchDone = false;
     }
@@ -44,7 +53,7 @@ public class CustomerBot : MonoBehaviour
         {
             if (Vector3.Distance(transform.position, initialPosition) > 0.1f)
             {
-                StartCoroutine(MoveToPosition(initialPosition, currentSpeed));
+                StartCoroutine(customerMovement.MoveToPosition(initialPosition, currentSpeed));
             }
             else
             {
@@ -55,7 +64,7 @@ public class CustomerBot : MonoBehaviour
         {
             Vector3 newPosition = Vector3.MoveTowards(transform.position, targetPosition, currentSpeed * Time.deltaTime);
             transform.position = new Vector3(newPosition.x, transform.position.y, newPosition.z);
-            RotateTowardsDirection(targetPosition);
+            customerMovement.RotateTowardsDirection(targetPosition);
         }
     }
 
@@ -63,15 +72,11 @@ public class CustomerBot : MonoBehaviour
     {
         if (queuePosition == 1 && !hasSearched)
         {
-            StartCoroutine(SearchForShelf());
+            StartCoroutine(customerMovement.SearchForShelf());
             hasSearched = true;
             walking = false;
         }
     }
-
-    public int QueuePosition => queuePosition;
-
-    public bool FirstSearchDone { get => firstSearchDone; set => firstSearchDone = value; }
 
     public void SetQueuePosition(int positionIndex)
     {

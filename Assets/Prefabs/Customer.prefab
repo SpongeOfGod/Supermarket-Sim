@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 282234518815407239}
   - component: {fileID: 586996193283951687}
+  - component: {fileID: -5750226814496319498}
   m_Layer: 0
   m_Name: Customer
   m_TagString: Untagged
@@ -46,14 +47,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0216ea92d6b38fa41b2783c353f8db18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  customerMovement: {fileID: -5750226814496319498}
   speed: 4
-  waitTime: 0.25
   speedMultiplier: 3
-  rotationSpeed: 15
+  done: 0
+  shelfList: {fileID: 0}
+--- !u!114 &-5750226814496319498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 621886388948182589}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 183009d88796c3c4398d0b3d3056072a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   targetOffset: {x: 0, y: -1.38, z: -3}
   parentForFlakes: {fileID: 135507589750417016}
-  queuePosition: 0
-  done: 0
+  waitTime: 0.25
+  rotationSpeed: 15
 --- !u!1 &1147406619872012552
 GameObject:
   m_ObjectHideFlags: 0
