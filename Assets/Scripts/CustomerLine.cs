@@ -37,17 +37,8 @@ public class CustomerLine : MonoBehaviour
             }
         }
 
-<<<<<<< Updated upstream
-        if (onSearchMode && !onPosition) 
-        {
-            IEnumerator coroutine = AlignWithSections();
-            StartCoroutine(coroutine);
-            RearrangeCustomers();
-        }
-=======
         UpdateCustomer();
     }
->>>>>>> Stashed changes
 
     public void CreateCustomer()
     {
@@ -80,35 +71,7 @@ public class CustomerLine : MonoBehaviour
 
     private IEnumerator ActivateSearchMode()
     {
-<<<<<<< Updated upstream
-        GameObject a = Instantiate(customer, Vector3.zero, Quaternion.identity, transform);
-        a.transform.position = waitingLine + Vector3.back * offsetZ * queue.Count + new Vector3(0, 1f, 0);
-        Quaternion rotA = Quaternion.Euler(0, 180, 0);
-        a.transform.rotation = rotA;
-        queue.Enqueue(a);
-        currentTime = 0;
-    }
-
-    public void RearrangeCustomers() 
-    {
-        foreach(GameObject gameObject in queue) 
-        {
-            if(gameObject != queue.Peek() && !gameObject.GetComponent<CustomerBot>().isArranged) 
-            {
-                StartCoroutine(MoveCustomersInLine(gameObject));
-            }
-        }
-    }
-
-    IEnumerator AlignWithSections() 
-    {
-        float cTime = 0;
-        GameObject a = queue.Peek();
-        Vector3 initialPos = a.transform.position;
-        while (cTime < timeToReachSections && !onPosition) 
-=======
         foreach (GameObject customer in queue)
->>>>>>> Stashed changes
         {
             if (customer == null) continue;
             CustomerBot bot = customer.GetComponent<CustomerBot>();
@@ -117,28 +80,6 @@ public class CustomerLine : MonoBehaviour
                 bot.ActivateSearch();
             }
         }
-<<<<<<< Updated upstream
-        a.transform.position = locationToGo;
-        onPosition = true;
-        StopCoroutine("AlignWithSections");
-        yield return null;
-    }
-
-    IEnumerator MoveCustomersInLine(GameObject customer) 
-    {
-        float cTime = 0;
-        Vector3 initialPos = customer.transform.position;
-        while(cTime < timeToReachSections && onSearchMode && !onPosition) 
-        {
-            cTime += Time.deltaTime;
-            customer.transform.position = Vector3.Lerp(initialPos, initialPos + new Vector3(0, 0, 2), cTime / timeToReachSections);
-            yield return null;
-        }
-        customer.transform.position = initialPos + new Vector3(0, 0, 2);
-        customer.GetComponent<CustomerBot>().isArranged = true;
-        StopCoroutine("MoveCustomersInLine");
-=======
->>>>>>> Stashed changes
         yield return null;
         onSearchMode = false;
     }
