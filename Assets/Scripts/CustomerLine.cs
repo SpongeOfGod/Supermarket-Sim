@@ -11,6 +11,7 @@ public class CustomerLine : MonoBehaviour
     [SerializeField] private int maxCustomers = 4;
     [SerializeField] private float distanceBetweenCustomers = 1.5f;
     [SerializeField] private Vector3 initialPosition;
+    [SerializeField] private Vector3 finalPosition;
 
     [Header("State")]
     private Queue<GameObject> queue = new Queue<GameObject>();
@@ -102,7 +103,12 @@ public class CustomerLine : MonoBehaviour
         return false;
     }
 
-
+    private bool IsAtFinalPosition(CustomerBot bot)
+    {
+        Vector3 currentPosition = bot.transform.position;
+        Vector3 targetPosition = finalPosition;
+        return Vector3.Distance(currentPosition, targetPosition) < 0.1f;
+    }
     public void DequeueFirst()
     {
         if (queue.Count > 0)
@@ -122,6 +128,11 @@ public class CustomerLine : MonoBehaviour
             {
                 CustomerBot bot = firstCustomer.GetComponent<CustomerBot>();
                 if (bot != null && bot.done)
+                {
+                    bot.SetTargetPosition(finalPosition);
+                }
+
+                if (IsAtFinalPosition(bot) && bot != null && bot.done)
                 {
                     DequeueFirst();
                 }

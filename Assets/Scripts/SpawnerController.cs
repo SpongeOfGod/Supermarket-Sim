@@ -45,7 +45,7 @@ public class SpawnerController : MonoBehaviour
         }
     }
 
-    public void PopStack()
+    public GameObject PopStack()
     {
         if (ObjectStack.TryPop(out GameObject plate))
         {
@@ -53,19 +53,21 @@ public class SpawnerController : MonoBehaviour
             if (animator != null)
             {
                 animator.SetBool("despawn", true);
-                StartCoroutine(WaitAndDestroy(plate, 0.1f));
+                StartCoroutine(WaitAndReturn(plate, 0.1f));
+                return plate;
             }
             else
             {
                 Destroy(plate);
+                return null;
             }
         }
+        return null;
     }
 
-    private IEnumerator WaitAndDestroy(GameObject obj, float waitTime)
+    private IEnumerator WaitAndReturn(GameObject obj, float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-        Destroy(obj);
     }
 
     private void OnMouseOver()

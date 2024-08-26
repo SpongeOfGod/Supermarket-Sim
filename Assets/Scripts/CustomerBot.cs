@@ -10,6 +10,7 @@ public class CustomerBot : MonoBehaviour
     [SerializeField] private float speedMultiplier = 3f;
     [SerializeField] private float rotationSpeed = 15f;
     [SerializeField] private Vector3 targetOffset = Vector3.zero;
+    [SerializeField] private Transform parentForFlakes;
 
     [Header("State")]
     public int queuePosition;
@@ -26,7 +27,7 @@ public class CustomerBot : MonoBehaviour
     [Header("Components")]
     private ShelfList shelfList;
 
-private void Start()
+    private void Start()
     {
         shelfList = GameObject.FindGameObjectWithTag("ShelfManager").GetComponent<ShelfList>();
         initialPosition = transform.position;
@@ -118,8 +119,18 @@ private void Start()
                     if (spawner != null && spawner.ObjectStack.Count > 0)
                     {
                         Debug.Log("Misión Cumplida :)");
-                        spawner.PopStack();
-                        done = true;
+                        GameObject cereal = spawner.PopStack();
+                        if(cereal != null) 
+                        {
+                            Animator animator = cereal.GetComponent<Animator>();
+                            if(animator != null) 
+                            {
+                                animator.SetBool("despawn", false);
+                            }
+                            done = true;
+                            cereal.transform.parent = parentForFlakes;
+                            cereal.transform.position = parentForFlakes.transform.position + new Vector3(0, 1, 1);
+                        }
                     }
                     else
                     {
