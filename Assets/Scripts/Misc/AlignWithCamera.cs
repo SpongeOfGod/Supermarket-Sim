@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class AlignWithCamera: MonoBehaviour
+public class AlignWithCamera : MonoBehaviour
 {
     private Camera mainCamera;
 
@@ -13,7 +13,7 @@ public class AlignWithCamera: MonoBehaviour
     {
         if (mainCamera != null)
         {
-            transform.rotation = Quaternion.Euler(0, mainCamera.transform.eulerAngles.y, 0);
+            transform.rotation = Quaternion.Euler(mainCamera.transform.eulerAngles.x, mainCamera.transform.eulerAngles.y, 0);
         }
     }
 }
