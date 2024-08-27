@@ -30,9 +30,9 @@ public class ScoreSet : MonoBehaviour
 
     private IEnumerator updateScore()
     {
-        yield return new WaitForSeconds(0.45f);
+        yield return new WaitForSeconds(0.48f);
 
-        m_TextMeshProUGUI.text = "Score: $" + actualScore;
+        m_TextMeshProUGUI.text = "Cash: $" + actualScore;
         Instantiate(scorePlus, transform);
     }
 }

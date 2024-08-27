@@ -6,6 +6,8 @@ using UnityEngine.TestTools;
 
 public class ScoreKiller : MonoBehaviour
 {
+    [SerializeField] private float killTime = 1.01f;
+
     private void Update()
     {
         StartCoroutine(updateScore());
@@ -13,7 +15,7 @@ public class ScoreKiller : MonoBehaviour
 
     private IEnumerator updateScore()
     {
-        yield return new WaitForSeconds(1.01f);
+        yield return new WaitForSeconds(killTime);
         Destroy(gameObject);
     }
 }

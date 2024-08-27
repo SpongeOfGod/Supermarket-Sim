@@ -16,9 +16,10 @@ public class SpawnerController : MonoBehaviour
     [Header("Material")]
     [SerializeField] private Material highlightMaterial;
     private Material originalMaterial;
-
     private MeshRenderer meshRenderer;
-    private bool above;
+
+    [Header("State")]
+    public bool mouseAbove;
 
     private void Start()
     {
@@ -31,12 +32,12 @@ public class SpawnerController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetButtonDown("Fire2") && ObjectStack.Count > 0 && above)
+        if (Input.GetButtonDown("Fire2") && ObjectStack.Count > 0 && mouseAbove)
         {
             PopStack();
         }
 
-        if (Input.GetButtonDown("Fire1") && ObjectStack.Count <= 4 && above)
+        if (Input.GetButtonDown("Fire1") && ObjectStack.Count <= 4 && mouseAbove)
         {
             GameObject a = Instantiate(objects, Vector3.zero, Quaternion.identity, transform);
             a.transform.localPosition = initialPos + Vector3.Scale(offset, new Vector3(0, 0, ObjectStack.Count));
@@ -72,7 +73,7 @@ public class SpawnerController : MonoBehaviour
 
     private void OnMouseOver()
     {
-        above = true;
+        mouseAbove = true;
         if (meshRenderer != null)
         {
             meshRenderer.material = highlightMaterial;
@@ -81,7 +82,7 @@ public class SpawnerController : MonoBehaviour
 
     private void OnMouseExit()
     {
-        above = false;
+        mouseAbove = false;
         if (meshRenderer != null)
         {
             meshRenderer.material = originalMaterial;

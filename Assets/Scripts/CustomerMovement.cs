@@ -15,8 +15,13 @@ public class CustomerMovement : MonoBehaviour
     [SerializeField] private float waitTime = 0.25f;
     [SerializeField] private float rotationSpeed = 15f;
 
+    [Header("Prefabs")]
+    [SerializeField] private GameObject successPrefab;
+    [SerializeField] private GameObject failurePrefab;
+
     CustomerBot customerBot;
     GameObject CustomerObject;
+    
     public void Initialize(CustomerBot customer, GameObject customerGameObject) 
     {
         customerBot = customer;
@@ -65,14 +70,25 @@ public class CustomerMovement : MonoBehaviour
                     {
                         animator.SetBool("despawn", false);
                     }
-                    customerBot.done = true;
                     cereal.transform.parent = parentForFlakes;
                     cereal.transform.position = parentForFlakes.transform.position + new Vector3(0, 1, 1);
+                    if (successPrefab != null)
+                    {
+                        GameObject successObject = Instantiate(successPrefab, parentForFlakes);
+                        successObject.transform.localPosition = new Vector3(0, 3.75f, 0);
+                    }
+                    yield return new WaitForSeconds(waitTime);
+                    customerBot.done = true;
                 }
             }
             else
             {
                 Debug.Log("Intentando una sección aleatoria :(");
+                if (failurePrefab != null)
+                {
+                    GameObject failureObject = Instantiate(failurePrefab, parentForFlakes);
+                    failureObject.transform.localPosition = new Vector3(0, 3.75f, 0);
+                }
                 yield return new WaitForSeconds(waitTime);
                 StartCoroutine(NextSection());
             }

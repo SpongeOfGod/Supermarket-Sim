@@ -68,6 +68,8 @@ MonoBehaviour:
   parentForFlakes: {fileID: 135507589750417016}
   waitTime: 0.25
   rotationSpeed: 15
+  successPrefab: {fileID: 1346786681304949882, guid: 8b22b9b74806f464abe5977fd32869e4, type: 3}
+  failurePrefab: {fileID: 1346786681304949882, guid: a674b94f14b9bf34988ae18b0485c1fd, type: 3}
 --- !u!1 &1147406619872012552
 GameObject:
   m_ObjectHideFlags: 0

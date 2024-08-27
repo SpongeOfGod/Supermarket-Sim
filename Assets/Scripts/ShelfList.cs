@@ -44,8 +44,8 @@ public class ShelfList : MonoBehaviour
 
         if (sectionManager != null && sectionManager.sections.Count > 0)
         {
-            int rRandomIndex = Random.Range(0, sectionManager.sections.Count);
-            GameObject section = sectionManager.sections[randomIndex];
+            int randomIndexSection = Random.Range(0, sectionManager.sections.Count);
+            GameObject section = sectionManager.sections[randomIndexSection];
             return section;
         }
 

@@ -9,7 +9,6 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     public static int score;
 
-
     private void Awake()
     {
         if (instance == null) 
@@ -24,8 +23,6 @@ public class GameManager : MonoBehaviour
 
         DontDestroyOnLoad(gameObject);
     }
-
-
 
     public static void AddScore() 
     {
